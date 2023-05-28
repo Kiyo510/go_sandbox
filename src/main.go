@@ -1,17 +1,23 @@
 package main
 
 import (
-	"embed"
-	"net/http"
+	"log"
+	"os"
+	"time"
 
-	"github.com/labstack/echo/v4"
+	"github.com/Kiyo510/go-sandbox/src/server"
 )
 
-//go:embed static
-var local embed.FS
-
 func main() {
-	e := echo.New()
-	e.GET("/", echo.WrapHandler(http.FileServer(http.FS(local))))
-	e.Logger.Fatal(e.Start(":8989"))
+	f, err := os.Create("server.log")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	logger := log.New(f, "", log.LstdFlags)
+	svr := server.New("localhost", 8888, server.WithTimeout(time.Minute), server.WithLogger(logger))
+	if err := svr.Start(); err != nil {
+		log.Fatal(err)
+	}
 }
