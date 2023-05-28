@@ -2,33 +2,48 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
 	"log"
-	"time"
+	"os"
+	"path/filepath"
 )
 
 func main() {
-	//now := time.Now()
-	//fmt.Println(now.Format("2006/01/02 15:04:05"))
-	//fmt.Println(now.Format("2006/1/02 03:04:05"))
-	//fmt.Println(now.Format(time.RFC3339))
-
-	//var s = "2022/12/25 07:42:38"
-	//d, err := time.Parse("2006/01/02 15:04:05", s)
-	//if err != nil {
-	//	log.Fatal(err)
+	//println(filepath.Base("/src/file.txt"))
+	//println(filepath.Dir("/src/file.txt"))
+	//println(filepath.Clean("/src/../file.txt"))
+	//println(filepath.Ext("/src/file.txt"))
+	//println(filepath.IsAbs("/src/file.txt"))
+	//println(filepath.IsAbs("./src/file.txt"))
+	//println(filepath.Join("/src", "/file.txt"))
+	//absolute, err := filepath.Abs("../file.txt")
+	//if err == nil {
+	//	println(absolute)
 	//}
-	//fmt.Println(d)
+	//
+	//absolute, err = filepath.Rel("/src", "/src/file.txt")
+	//if err == nil {
+	//	println(absolute)
+	//}
 
-	d, err := time.ParseDuration("3s")
+	var files []string
+	cwd, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(d)
+	err = filepath.WalkDir(cwd, func(path string, info fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
 
-	d, err = time.ParseDuration("4m")
-	if err != nil {
-		log.Fatal(d)
-	}
-	fmt.Println(d / 2)
+		if info.IsDir() {
+			return nil
+		}
+
+		files = append(files, path)
+		return nil
+	})
+
+	fmt.Println(files)
 }
