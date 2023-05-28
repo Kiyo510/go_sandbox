@@ -1,19 +1,17 @@
 package main
 
 import (
-	_ "embed"
+	"embed"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
-//go:embed static/logo.png
-var contents []byte
+//go:embed static
+var local embed.FS
 
 func main() {
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.Blob(http.StatusOK, "image/png", contents)
-	})
+	e.GET("/", echo.WrapHandler(http.FileServer(http.FS(local))))
 	e.Logger.Fatal(e.Start(":8989"))
 }
