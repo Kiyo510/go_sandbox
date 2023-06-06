@@ -1,23 +1,21 @@
 package main
 
 import (
-	"log"
-	"os"
+	"sync"
 	"time"
-
-	"github.com/Kiyo510/go-sandbox/src/server"
 )
 
-func main() {
-	f, err := os.Create("server.log")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
+func doSomething(wg *sync.WaitGroup) {
+	defer wg.Done()
 
-	logger := log.New(f, "", log.LstdFlags)
-	svr := server.New("localhost", 8888, server.WithTimeout(time.Minute), server.WithLogger(logger))
-	if err := svr.Start(); err != nil {
-		log.Fatal(err)
+	time.Sleep(100 * time.Second)
+}
+
+func main() {
+	var wg sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		wg.Add(1)
+		go doSomething(&wg)
 	}
+	wg.Wait()
 }
