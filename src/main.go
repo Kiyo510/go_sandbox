@@ -4,6 +4,22 @@ import (
 	"fmt"
 )
 
+func fanIn(ch1, ch2 <-chan string) <-chan string {
+	newCh := make(chan string)
+	go func() {
+		for {
+			newCh <- <-ch1
+		}
+	}()
+	go func() {
+		for {
+			newCh <- <-ch2
+		}
+	}()
+
+	return newCh
+}
+
 func generator(msg string) <-chan string {
 	ch := make(chan string)
 	go func() {
@@ -15,7 +31,7 @@ func generator(msg string) <-chan string {
 }
 
 func main() {
-	ch := generator("Hello")
+	ch := fanIn(generator("hello"), generator("bye"))
 	for i := 0; ; i++ {
 		fmt.Println(<-ch)
 	}
