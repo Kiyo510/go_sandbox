@@ -8,12 +8,14 @@ func fanIn(ch1, ch2 <-chan string) <-chan string {
 	newCh := make(chan string)
 	go func() {
 		for {
-			newCh <- <-ch1
-		}
-	}()
-	go func() {
-		for {
-			newCh <- <-ch2
+			select {
+			case s := <-ch1:
+				newCh <- s
+			case s := <-ch2:
+				newCh <- s
+			default:
+				//update_progressbar()
+			}
 		}
 	}()
 
