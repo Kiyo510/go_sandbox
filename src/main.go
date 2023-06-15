@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"math/rand"
 )
 
 func fanIn(ch1, ch2 <-chan string) <-chan string {
@@ -24,25 +24,27 @@ func fanIn(ch1, ch2 <-chan string) <-chan string {
 }
 
 func main() {
-	ch := generator("Hi!")
-	for i := 0; i < 10; i++ {
-		select {
-		case s := <-ch:
-			fmt.Println(s)
-		case <-time.After(1 * time.Second):
-			fmt.Println("Waited too long!")
-
-			return
-		}
+	quit := make(chan string)
+	ch := generator("Hi!", quit)
+	for i := rand.Intn(50); i >= 0; i-- {
+		fmt.Println(<-ch, i)
 	}
+
+	quit <- "Bye"
+	fmt.Printf("%s", <-quit)
 }
 
-func generator(msg string) <-chan string {
+func generator(msg string, quit chan string) <-chan string {
 	ch := make(chan string)
+
 	go func() {
 		for i := 0; ; i++ {
-			ch <- fmt.Sprintf("%s %d", msg, i)
-			time.Sleep(time.Second)
+			select {
+			case ch <- fmt.Sprintf("%s", msg):
+			case <-quit:
+				quit <- "See you!"
+				return
+			}
 		}
 	}()
 	return ch
