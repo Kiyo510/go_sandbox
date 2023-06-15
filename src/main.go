@@ -1,21 +1,22 @@
 package main
 
 import (
-	"sync"
-	"time"
+	"fmt"
 )
 
-func doSomething(wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	time.Sleep(100 * time.Second)
+func generator(msg string) <-chan string {
+	ch := make(chan string)
+	go func() {
+		for i := 0; ; i++ {
+			ch <- fmt.Sprintf("%s %d", msg, i)
+		}
+	}()
+	return ch
 }
 
 func main() {
-	var wg sync.WaitGroup
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go doSomething(&wg)
+	ch := generator("Hello")
+	for i := 0; ; i++ {
+		fmt.Println(<-ch)
 	}
-	wg.Wait()
 }
