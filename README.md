@@ -56,6 +56,6 @@ You will get the following response.
 Then, you have fully prepared for running API.
 
 ## 📄 API Document
-* Please copy and paste [this file](https://github.com/yagikota/clean_architecture_with_go/blob/main/api_doc.yml) on https://editor.swagger.io/ .
+* Please copy and paste [this file](https://github.com/Kiyo510/go_sandbox/blob/master/api_doc.yml) on https://editor.swagger.io/ .
 
 🐶 I hope this repository helps you studying Clean Architecture with Go.
