@@ -1,10 +1,10 @@
 package http
 
 import (
+	"github.com/Kiyo510/go_sandbox/pkg/usecase"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/usecase"
 )
 
 type studentHandler struct {

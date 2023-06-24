@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/domain/model"
+	"github.com/Kiyo510/go_sandbox/pkg/domain/model"
 )
 
 // IHogeHoge represents interface of HogeHoge

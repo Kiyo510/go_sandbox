@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/domain/model"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/domain/repository"
+	"github.com/Kiyo510/go_sandbox/pkg/domain/model"
+	"github.com/Kiyo510/go_sandbox/pkg/domain/repository"
 )
 
 type studentRepository struct {

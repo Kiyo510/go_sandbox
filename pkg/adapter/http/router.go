@@ -1,12 +1,12 @@
 package http
 
 import (
+	"github.com/Kiyo510/go_sandbox/pkg/domain/service"
+	"github.com/Kiyo510/go_sandbox/pkg/infra"
+	"github.com/Kiyo510/go_sandbox/pkg/infra/mysql"
+	"github.com/Kiyo510/go_sandbox/pkg/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/domain/service"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/infra"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/infra/mysql"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/usecase"
 )
 
 const (

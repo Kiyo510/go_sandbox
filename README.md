@@ -1,4 +1,4 @@
-# clean_architecture_with_go
+# go_sandbox
 ## 🗄 About this repository
 * This is a sample API buil by Go(echo) and SQLBoiler according to Clean Architecture.
 
@@ -6,9 +6,9 @@
 ### install
 #### this repository
 ```shell
-git clone git@github.com:yagikota/clean_architecture_with_go.git
+git clone git@github.com:Kiyo510/go_sandbox.git
 
-cd clean_architecture_with_go
+cd go_sandbox
 ```
 #### [SQLBoiler](https://github.com/volatiletech/sqlboiler#getting-started)
 ```shell

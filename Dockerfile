@@ -1,13 +1,13 @@
 # ===== build go binary =====
-FROM golang:1.18.3-alpine as go-builder
+FROM golang:1.19.3-alpine as go-builder
 
-WORKDIR /go/src/github.com/yagikota/clean_architecture_wtih_go/
+WORKDIR /go/src/github.com/Kiyo510/go_sandbox/
 
 COPY cmd/sample_app/main.go .
 COPY go.mod .
 COPY go.sum .
 RUN mkdir pkg
-COPY pkg/ ./pkg
+COPY pkg ./pkg
 
 RUN go mod download
 
@@ -18,6 +18,6 @@ FROM alpine
 
 RUN apk --no-cache add tzdata
 
-COPY --from=go-builder /go/src/github.com/yagikota/clean_architecture_wtih_go/server server
+COPY --from=go-builder /go/src/github.com/Kiyo510/go_sandbox/server server
 
 ENTRYPOINT ["/server"]

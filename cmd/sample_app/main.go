@@ -8,9 +8,9 @@ import (
 	"syscall"
 	"time"
 
+	adaptorHTTP "github.com/Kiyo510/go_sandbox/pkg/adapter/http"
+	"github.com/Kiyo510/go_sandbox/pkg/config"
 	_ "github.com/go-sql-driver/mysql"
-	adaptorHTTP "github.com/yagikota/clean_architecture_wtih_go/pkg/adapter/http"
-	"github.com/yagikota/clean_architecture_wtih_go/pkg/config"
 )
 
 func main() {
