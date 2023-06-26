@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"github.com/Kiyo510/go_sandbox/pkg/domain/service"
 	"github.com/Kiyo510/go_sandbox/pkg/infra"
 	"github.com/Kiyo510/go_sandbox/pkg/infra/mysql"
@@ -43,6 +44,10 @@ func InitRouter() *echo.Echo {
 		// v1/students
 		relativePath := ""
 		studentGroup.GET(relativePath, handler.FindAllStudents())
+
+		//v1/students/{student_id}
+		relativePath = fmt.Sprintf("/:%s", studentIDParam)
+		studentGroup.GET(relativePath, handler.FindStudentByID())
 	}
 
 	return e
