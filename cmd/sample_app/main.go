@@ -2,33 +2,29 @@ package main
 
 import "fmt"
 
-type SKUCode string
-
-func (c SKUCode) Invalid() bool {
-	// 桁数などのチェック
-	return len(c) != 9 // SKUコードが9桁でなければ無効とする例
+type ConfidentialCustomer struct {
+	CustomerID int64
+	CreditCard CreditCard
 }
 
-func (c SKUCode) ItemCD() string {
-	return string(c[0:5])
+type CreditCard string
+
+func (c CreditCard) String() string {
+	return "xxxx-xxxx-xxxx"
 }
 
-func (c SKUCode) SizeCD() string {
-	return string(c[5:7])
-}
-
-func (c SKUCode) ColorCD() string {
-	return string(c[7:9])
+func (c CreditCard) GoString() string {
+	return "xxxx-xxxx-xxxx"
 }
 
 func main() {
-	sku := SKUCode("123456789")
-
-	if sku.Invalid() {
-		fmt.Println("Invalid SKU Code")
-	} else {
-		fmt.Println("Item Code:", sku.ItemCD())
-		fmt.Println("Size Code:", sku.SizeCD())
-		fmt.Println("Color Code:", sku.ColorCD())
+	c := ConfidentialCustomer{
+		CustomerID: 1,
+		CreditCard: "4111-1111-1111",
 	}
+
+	fmt.Println(c)
+	fmt.Printf("%v\n", c)
+	fmt.Printf("%+v\n", c)
+	fmt.Printf("%#v\n", c)
 }
