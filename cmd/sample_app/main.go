@@ -2,29 +2,25 @@ package main
 
 import "fmt"
 
-type ConfidentialCustomer struct {
-	CustomerID int64
-	CreditCard CreditCard
+type Author struct {
+	name string
+	age  int
 }
-
-type CreditCard string
-
-func (c CreditCard) String() string {
-	return "xxxx-xxxx-xxxx"
-}
-
-func (c CreditCard) GoString() string {
-	return "xxxx-xxxx-xxxx"
+type Book struct {
+	name   string
+	author Author
 }
 
 func main() {
-	c := ConfidentialCustomer{
-		CustomerID: 1,
-		CreditCard: "4111-1111-1111",
+	b := &Book{
+		name: "Hurry Potter",
+		author: Author{
+			name: "John",
+			age:  28,
+		},
 	}
 
-	fmt.Println(c)
-	fmt.Printf("%v\n", c)
-	fmt.Printf("%+v\n", c)
-	fmt.Printf("%#v\n", c)
+	fmt.Println(b.author)
+	fmt.Println((*b).author)
+
 }
