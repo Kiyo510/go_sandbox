@@ -1,26 +1,32 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
-type Author struct {
-	name string
-	age  int
+type Warning interface {
+	Show(message string)
 }
-type Book struct {
-	name   string
-	author Author
+
+type ConsoleWarning struct{}
+
+func (c ConsoleWarning) Show(message string) {
+	fmt.Fprintf(os.Stderr, "[%s]: %s\n", os.Args[0], message)
 }
+
+type DeskTopWarning struct{}
+
+//func (d DeskTopWarning) Show(message string) {
+//	beeep.Alert(os.Args[0], message, "")
+//}
 
 func main() {
-	b := &Book{
-		name: "Hurry Potter",
-		author: Author{
-			name: "John",
-			age:  28,
-		},
-	}
+	var warn Warning
+	warn = &ConsoleWarning{}
+	warn.Show("console warning")
 
-	fmt.Println(b.author)
-	fmt.Println((*b).author)
-
+	warn = &DeskTopWarning{}
+	//var _ Warning = &DeskTopWarning{}
+	warn.Show("desktop message")
 }
