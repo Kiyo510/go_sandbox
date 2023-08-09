@@ -1,32 +1,64 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
+	"strings"
+
+	"golang.org/x/text/unicode/norm"
 )
 
-type Warning interface {
-	Show(message string)
+func Normalize(w io.Writer, r io.Reader) error {
+	br := bufio.NewReader(r)
+	for {
+		s, err := br.ReadString('\n')
+		if s != "" {
+			_, err := io.WriteString(w, norm.NFKC.String(s))
+			if err != nil {
+				return err
+			}
+		}
+		if err == io.EOF {
+			return nil
+		} else if err != nil {
+			return err
+		}
+	}
 }
 
-type ConsoleWarning struct{}
-
-func (c ConsoleWarning) Show(message string) {
-	fmt.Fprintf(os.Stderr, "[%s]: %s\n", os.Args[0], message)
+func NormalizeFile(input, output string) error {
+	r, err := os.Open(input)
+	if err != nil {
+		return err
+	}
+	w, err := os.Create(output)
+	if err != nil {
+		return err
+	}
+	return Normalize(w, r)
 }
 
-type DeskTopWarning struct{}
-
-//func (d DeskTopWarning) Show(message string) {
-//	beeep.Alert(os.Args[0], message, "")
-//}
+func NormalizeString(i string) (string, error) {
+	r := strings.NewReader(i)
+	var w strings.Builder
+	err := Normalize(&w, r)
+	if err != nil {
+		return "", err
+	}
+	return w.String(), nil
+}
 
 func main() {
-	var warn Warning
-	warn = &ConsoleWarning{}
-	warn.Show("console warning")
+	str, err := NormalizeString("ホゲ 　　　ｌホゲ")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(str)
 
-	warn = &DeskTopWarning{}
-	//var _ Warning = &DeskTopWarning{}
-	warn.Show("desktop message")
+	err = NormalizeFile("input.txt", "output.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
