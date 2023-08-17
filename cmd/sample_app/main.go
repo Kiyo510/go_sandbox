@@ -3,46 +3,33 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
 )
 
-type HttpError struct {
-	StatusCode int
-	URL        string
-	err        error
-}
-
-func (he HttpError) Error() string {
-	return fmt.Sprintf("http status code = %d, URL = %s", he.StatusCode, he.URL)
-}
-
-func (he HttpError) Unwrap() error {
-	return he.err
-}
-
-func ReadContents(url string) ([]byte, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, &HttpError{
-			StatusCode: resp.StatusCode,
-			URL:        url,
-			err:        errors.New("http get error"),
+// ConvertSlices []Tを[]Uへ変換
+func ConvertSlices[T, U any](srcList []T, convertFunc func(T) (U, error)) ([]U, error) {
+	result := make([]U, len(srcList))
+	for _, v := range srcList {
+		u, err := convertFunc(v)
+		if err != nil {
+			return nil, err
 		}
+		result = append(result, u)
 	}
-	return io.ReadAll(resp.Body)
+	return result, nil
 }
 
 func main() {
-	body, err := ReadContents("https://google.com/hogehoge")
-	if err != nil {
-		fmt.Println(err.Error())
-	}
+	var fishList = []any{"鯖", "鰤", "鮪"}
+	strs, err := ConvertSlices(fishList, func(f any) (string, error) {
+		if fn, ok := f.(string); ok {
+			return fn, nil
+		}
+		return "", errors.New("cannot assertion")
+	})
 
-	fmt.Println(body)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println(strs)
 }
