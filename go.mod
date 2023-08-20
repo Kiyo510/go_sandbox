@@ -1,6 +1,8 @@
 module github.com/Kiyo510/go_sandbox
 
-go 1.19
+go 1.21
+
+toolchain go1.21.0
 
 require (
 	github.com/friendsofgo/errors v0.9.2
