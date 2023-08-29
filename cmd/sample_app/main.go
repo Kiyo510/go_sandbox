@@ -1,11 +1,26 @@
 package main
 
 import (
-	"log/slog"
+	"encoding/json"
+	"fmt"
 	"os"
 )
 
+type ip struct {
+	Origin string `json:"origin"`
+	URL    string `json:"url"`
+}
+
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	logger.Info("Info message") // {"time":"2023-08-21T01:37:49.760783+09:00","level":"INFO","msg":"Info message"}
+	f, err := os.Open("ip.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer f.Close()
+
+	var resp ip
+	if err := json.NewDecoder(f).Decode(&resp); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%+v\n", resp)
 }
