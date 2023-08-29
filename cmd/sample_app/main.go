@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 )
 
 type ip struct {
@@ -12,14 +11,9 @@ type ip struct {
 }
 
 func main() {
-	f, err := os.Open("ip.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer f.Close()
-
+	s := `{"origin": "255.111.111.111", "url": "https://httpbin.org/get"}`
 	var resp ip
-	if err := json.NewDecoder(f).Decode(&resp); err != nil {
+	if err := json.Unmarshal([]byte(s), &resp); err != nil {
 		fmt.Println(err)
 	}
 	fmt.Printf("%+v\n", resp)
