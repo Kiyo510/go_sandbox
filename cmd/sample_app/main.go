@@ -5,16 +5,22 @@ import (
 	"fmt"
 )
 
-type ip struct {
-	Origin string `json:"origin"`
-	URL    string `json:"url"`
+type Bottle struct {
+	Name  string `json:"name"`
+	Price int    `json:"price,omitempty"`
+	KCal  *int   `json:"kcal,omitempty"`
 }
 
 func main() {
-	s := `{"origin": "255.111.111.111", "url": "https://httpbin.org/get"}`
-	var resp ip
-	if err := json.Unmarshal([]byte(s), &resp); err != nil {
-		fmt.Println(err)
+	b := Bottle{
+		Name:  "Tarou",
+		Price: 0,
+		KCal:  Int(0),
 	}
-	fmt.Printf("%+v\n", resp)
+	out, _ := json.Marshal(b)
+	fmt.Println(string(out))
+}
+
+func Int(v int) *int {
+	return &v
 }
