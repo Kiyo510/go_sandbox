@@ -1,26 +1,37 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	"log"
+	"os"
+
+	"github.com/gocarina/gocsv"
 )
 
-type Bottle struct {
-	Name  string `json:"name"`
-	Price int    `json:"price,omitempty"`
-	KCal  *int   `json:"kcal,omitempty"`
+type record struct {
+	Number  int    `csv:"number"`
+	Message string `csv:"message"`
 }
 
 func main() {
-	b := Bottle{
-		Name:  "Tarou",
-		Price: 0,
-		KCal:  Int(0),
-	}
-	out, _ := json.Marshal(b)
-	fmt.Println(string(out))
-}
+	c := make(chan interface{})
+	go func() {
+		defer close(c)
+		for i := 0; i < 1000*1000; i++ {
+			c <- record{
+				Number:  i + 1,
+				Message: "Hello",
+			}
+		}
+		return
+	}()
 
-func Int(v int) *int {
-	return &v
+	f, err := os.Create("test.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	if err := gocsv.MarshalChan(c, gocsv.DefaultCSVWriter(f)); err != nil {
+		log.Fatal(err)
+	}
 }

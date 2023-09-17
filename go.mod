@@ -4,6 +4,7 @@ go 1.21.0
 
 require (
 	github.com/friendsofgo/errors v0.9.2
+	github.com/gocarina/gocsv v0.0.0-20230616125104-99d496ca653d
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/volatiletech/null/v8 v8.1.2
 	github.com/volatiletech/sqlboiler/v4 v4.15.0
