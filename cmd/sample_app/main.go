@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -13,25 +14,27 @@ type record struct {
 }
 
 func main() {
-	c := make(chan interface{})
-	go func() {
-		defer close(c)
-		for i := 0; i < 1000*1000; i++ {
-			c <- record{
-				Number:  i + 1,
-				Message: "Hello",
-			}
-		}
-		return
-	}()
-
-	f, err := os.Create("test.csv")
+	f, err := os.Open("test.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer f.Close()
 
-	if err := gocsv.MarshalChan(c, gocsv.DefaultCSVWriter(f)); err != nil {
-		log.Fatal(err)
+	c := make(chan record)
+	done := make(chan bool)
+	go func() {
+		if err := gocsv.UnmarshalToChan(f, c); err != nil {
+			log.Fatal(err)
+		}
+		done <- true
+	}()
+
+	for {
+		select {
+		case v := <-c:
+			fmt.Printf("%+v\n", v)
+		case <-done:
+			return
+		}
 	}
 }
