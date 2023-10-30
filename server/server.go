@@ -2,24 +2,35 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 
-	pb "github.com/Kiyo510/go_sandbox/greeter"
+	hellopb "github.com/Kiyo510/go_sandbox/pkg/grpc"
 	"google.golang.org/grpc"
 )
 
-type server struct{}
+type myServer struct {
+	hellopb.UnimplementedGreetingServiceServer
+}
 
-func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	log.Printf("Received: %v", in.Name)
-	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
+func NewMyServer() *myServer {
+	return &myServer{}
+}
+
+func (s *myServer) Hello(ctx context.Context, req *hellopb.HelloRequest) (*hellopb.HelloResponse, error) {
+	return &hellopb.HelloResponse{
+		Message: fmt.Sprintf("Hello, %s!", req.GetName()),
+	}, nil
 }
 
 func main() {
 	addr := ":50051"
-	lis, err := net.Listen("tcp", addr)
+	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -29,9 +40,20 @@ func main() {
 	}
 
 	s := grpc.NewServer(grpc.Creds(cred))
-	pb.RegisterGreeterServer(s, &server{})
+	hellopb.RegisterGreetingServiceServer(s, NewMyServer())
 
-	log.Printf("gRPC server listening on " + addr)
-	if err := s.Serve(lis); err != nil {
-	}
+	reflection.Register(s)
+
+	// 3. 作成したgRPCサーバーを、8080番ポートで稼働させる
+	go func() {
+		log.Printf("start gRPC server port: %v", addr)
+		s.Serve(listener)
+	}()
+
+	// 4.Ctrl+Cが入力されたらGraceful shutdownされるようにする
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	log.Println("stopping gRPC server...")
+	s.GracefulStop()
 }
