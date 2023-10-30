@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	pb "github.com/Kiyo510/go_sandbox/greeter"
+	hellopb "github.com/Kiyo510/go_sandbox/pkg/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	addr := "localhost:50051"
+	addr := "localhost:8080"
 	creds, err := credentials.NewClientTLSFromFile("server.crt", "")
 	if err != nil {
 		log.Fatal(err)
@@ -23,14 +23,14 @@ func main() {
 	}
 	defer conn.Close()
 
-	c := pb.NewGreeterClient(conn)
+	c := hellopb.NewGreetingServiceClient(conn)
 
 	name := os.Args[1]
 	ctx := context.Background()
 
 	md := metadata.Pairs("timestamp", time.Now().Format(time.Stamp))
 	ctx = metadata.NewOutgoingContext(ctx, md)
-	r, err := c.SayHello(ctx, &pb.HelloRequest{Name: name}, grpc.Trailer(&md))
+	r, err := c.Hello(ctx, &hellopb.HelloRequest{Name: name}, grpc.Trailer(&md))
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}

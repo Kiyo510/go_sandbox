@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"time"
 
 	hellopb "github.com/Kiyo510/go_sandbox/pkg/grpc"
 	"google.golang.org/grpc"
@@ -28,8 +29,21 @@ func (s *myServer) Hello(ctx context.Context, req *hellopb.HelloRequest) (*hello
 	}, nil
 }
 
+func (s *myServer) HelloServerStream(req *hellopb.HelloRequest, stream hellopb.GreetingService_HelloServerStreamServer) error {
+	resCount := 5
+	for i := 0; i < resCount; i++ {
+		if err := stream.Send(&hellopb.HelloResponse{
+			Message: fmt.Sprintf("[%d] Hello, %s!", i, req.GetName()),
+		}); err != nil {
+			return err
+		}
+		time.Sleep(time.Second * 1)
+	}
+	return nil
+}
+
 func main() {
-	addr := ":50051"
+	addr := ":8080"
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -46,7 +60,7 @@ func main() {
 
 	// 3. 作成したgRPCサーバーを、8080番ポートで稼働させる
 	go func() {
-		log.Printf("start gRPC server port: %v", addr)
+		log.Printf("start gRPC server port %v", addr)
 		s.Serve(listener)
 	}()
 
