@@ -5,25 +5,20 @@ import (
 )
 
 func main() {
-	var N int
-	fmt.Scan(&N)
+	var A, B, C, X int
+	fmt.Scan(&A, &B, &C, &X)
 
-	minCount := int(^uint(0) >> 1)
-
-	for i := 0; i < N; i++ {
-		var A int
-		fmt.Scan(&A)
-
-		count := 0
-		for A%2 == 0 {
-			count++
-			A >>= 1
-		}
-
-		if count < minCount {
-			minCount = count
+	count := 0
+	for a := 0; a <= A; a++ {
+		for b := 0; b <= B; b++ {
+			for c := 0; c <= C; c++ {
+				total := 500*a + 100*b + 50*c
+				if total == X {
+					count++
+				}
+			}
 		}
 	}
 
-	fmt.Println(minCount)
+	fmt.Println(count)
 }
