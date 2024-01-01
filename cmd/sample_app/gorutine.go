@@ -3,25 +3,46 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
 )
 
 func main() {
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done() //(1)
-		fmt.Println("1st goroutine sleeping...")
-		time.Sleep(1)
-	}()
+	var count int
+	var lock sync.Mutex
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done() //(2)
-		fmt.Println("2nd goroutine sleeping...")
-		time.Sleep(2)
-	}()
+	increment := func() {
+		lock.Lock() // (1)
+		defer lock.Unlock() // (2)
+		count++
+		fmt.Printf("increment: %d\n", count)
+	}
 
-	wg.Wait() //(3)
-	fmt.Println("All goroutine complete.")
+	decrement := func() {
+		lock.Lock() // (1)
+		defer lock.Unlock() // (2)
+		count--
+		fmt.Printf("decrement %d\n", count)
+	}
+
+	// Increment
+	var arithmetic sync.WaitGroup
+	for i := 0; i <= 5; i++ {
+		arithmetic.Add(1)
+		go func() {
+			defer arithmetic.Done()
+			increment()
+		}()
+	}
+
+	// Decrement
+	for i := 0; i <= 5; i++ {
+		arithmetic.Add(1)
+		go func() {
+			defer arithmetic.Done()
+			decrement()
+		}()
+	}
+
+	arithmetic.Wait()
+
+	fmt.Println("arithmetic complete")
 }
