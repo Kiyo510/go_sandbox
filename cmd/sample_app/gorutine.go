@@ -3,15 +3,25 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 func main() {
 	var wg sync.WaitGroup
-	sayHello := func() {
-		defer wg.Done()
-		fmt.Println("Hello")
-	}
 	wg.Add(1)
-	go sayHello()
-	wg.Wait() // ① 合流ポイント
+	go func() {
+		defer wg.Done() //(1)
+		fmt.Println("1st goroutine sleeping...")
+		time.Sleep(1)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done() //(2)
+		fmt.Println("2nd goroutine sleeping...")
+		time.Sleep(2)
+	}()
+
+	wg.Wait() //(3)
+	fmt.Println("All goroutine complete.")
 }
