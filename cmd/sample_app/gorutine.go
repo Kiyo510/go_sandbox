@@ -1,17 +1,24 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 func main() {
-	intStream := make(chan int)
-	go func() {
-		defer close(intStream)
-		for i := 1; i <= 5; i++ {
-			intStream <- i
-		}
-	}()
+	begin := make(chan int)
+	var wg sync.WaitGroup
 
-	for int := range intStream {
-		fmt.Printf("%v ", int)
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			<-begin
+			fmt.Printf("Goroutine %d\n", i)
+		}(i)
 	}
+
+	fmt.Println("Unblocking goroutin!")
+	close(begin)
+	wg.Wait()
 }
