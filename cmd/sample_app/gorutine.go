@@ -1,24 +1,26 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
-	"sync"
+	"os"
 )
 
 func main() {
-	begin := make(chan int)
-	var wg sync.WaitGroup
+	var stdoutBuff bytes.Buffer
+	defer stdoutBuff.WriteTo(os.Stdout)
 
-	for i := 0; i < 10; i++ {
-		wg.Add(1)
-		go func(i int) {
-			defer wg.Done()
-			<-begin
-			fmt.Printf("Goroutine %d\n", i)
-		}(i)
+	intStream := make(chan int, 4)
+	go func() {
+		defer close(intStream)
+		defer fmt.Fprintln(&stdoutBuff, "Producer Done.")
+		for i := 0; i < 5; i++ {
+			fmt.Fprintf(&stdoutBuff, "Sending: %d\n", i)
+			intStream <- i
+		}
+	}()
+
+	for integer := range intStream {
+		fmt.Fprintf(&stdoutBuff, "Received %v.\n", integer)
 	}
-
-	fmt.Println("Unblocking goroutin!")
-	close(begin)
-	wg.Wait()
 }
