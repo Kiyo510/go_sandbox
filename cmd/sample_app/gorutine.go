@@ -1,28 +1,25 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"sync"
 )
 
 func main() {
-	chanOwner := func() <-chan int {
-		results := make(chan int, 5)
-		go func() {
-			defer close(results)
-			for i := 0; i <= 5; i++ {
-				results <- i
-			}
-		}()
-		return results
-	}
-
-	consumer := func(results <-chan int) {
-		for result := range results {
-			fmt.Printf("Received: %d\n", result)
+	printData := func(wg *sync.WaitGroup, data []byte) {
+		defer wg.Done()
+		var buffer bytes.Buffer
+		for _, d := range data {
+			fmt.Fprintf(&buffer, "%c", d)
 		}
-		fmt.Println("Done receiving!")
+		fmt.Println(buffer.String())
 	}
 
-	results := chanOwner()
-	consumer(results)
+	var wg sync.WaitGroup
+	wg.Add(2)
+	data := []byte("golang")
+	printData(&wg, data[:3])
+	printData(&wg, data[3:])
+	wg.Wait()
 }
