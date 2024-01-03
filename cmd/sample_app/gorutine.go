@@ -1,22 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
-	chanOwner := func() <-chan int {
-		resultStream := make(chan int, 5) //1
-		go func() {                       //2
-			defer close(resultStream) //3
-			for i := 0; i < 5; i++ {
-				resultStream <- i
-			}
-		}()
-		return resultStream //4
-	}
-	resultStream := chanOwner()
-	for result := range resultStream { //5
-		fmt.Printf("Received: %d\n", result)
+	channel1 := make(chan string)
+
+	go func() {
+		time.Sleep(5 * time.Second)
+		close(channel1)
+	}()
+
+	workerCounter := 0
+loop:
+	for {
+		select {
+		case <-channel1:
+			fmt.Println("channel1を受信")
+			break loop
+		default:
+			workerCounter++
+			time.Sleep(1 * time.Second)
+		}
 	}
 
-	fmt.Println("Done Receiving!")
+	fmt.Println("default:", workerCounter)
 }
